@@ -102,12 +102,29 @@ studentDataForm.onsubmit = (e) => {
         msg.innerHTML = createAlert("Invalid Registation Number!!!");
     }else{
 
+
         // old student date here now
         const oldStudentData = getDataLS("students");
+        
+        // check roll to database is allready value here
+        if(oldStudentData.some((item) => item.roll === data.roll) == true){
+            msg.innerHTML = createAlert("Roll Already Exists !!!");
+            return;
+        }
+
+
+         // check reg to database is allready value here
+        if(oldStudentData.some((item) => item.reg === data.reg) == true){
+            msg.innerHTML = createAlert("Registation Already Exists !!!");
+            return;
+        }
+
+
         oldStudentData.push({
             ...data,
             result: null,
             time: Date.now(),
+            id: getRandomUniqueID(26),
         });
 
         // set data for LS
