@@ -4,6 +4,7 @@ const studentDataForm = document.getElementById("student_create_form");
 const msg   = document.querySelector(".msg");
 const showStudent   = document.querySelector(".all-students-data");
 const showSingleView  = document.querySelector(".single-data");
+const student_edit_form  = document.getElementById("student_edit_form");
 
 // get student data here
 
@@ -25,7 +26,7 @@ const getStudentData = () => {
                 <td><button class="btn btn-success">Add Result</button></td>
                 <td>
                     <button data-bs-toggle="modal" data-bs-target="#show_single_student_modal" class="btn btn-info" onclick="singleView('${student.roll}')" ><i class="fa-solid fa-eye"></i></button>
-                    <button class="btn btn-primary"><i class="fa-solid fa-edit"></i></button>
+                    <button data-bs-toggle="modal" data-bs-target="#edit_student_modal" onclick="editeData('${student.id}')" class="btn btn-primary"><i class="fa-solid fa-edit"></i></button>
                     <button class="btn btn-danger" onclick="deleleStudent('${student.roll}')"><i class="fa-solid fa-trash"></i></button>
                 </td>
             </tr>
@@ -42,6 +43,12 @@ const getStudentData = () => {
     showStudent.innerHTML = content;
 }
 getStudentData();
+
+
+
+
+
+// single data view
 
 const singleView = (roll) => {
 
@@ -69,18 +76,66 @@ const singleView = (roll) => {
 
 const deleleStudent = (roll) => {
 
-    const conform = confirm("Your Data Is Delete Now");
 
-    if(conform){
-        const oldData = getDataLS("students");
-        const updateData = oldData.filter((data) => data.roll !== roll);
-        sendDataLS("students", updateData);
-    }else{
-        alert("Your Data Safe Now");
-    }
+    const oldData = getDataLS("students");
+
+    confirm("Your Data Delete Now");
+    const updateData = oldData.filter((data) => data.roll !== roll);
+    sendDataLS("students", updateData);
+        
+
 
     getStudentData();
 }
+
+
+
+// student data for edite here now
+const editeData = (id) => {
+    // get all data for LS
+    const oldData = getDataLS("students");
+
+    const data = oldData.find((data) => data.id === id);
+
+    student_edit_form.querySelector("input[name = 'name']").value = data.name;
+    student_edit_form.querySelector("input[name = 'rol']").value = data.roll;
+    student_edit_form.querySelector("input[name = 'reg']").value = data.reg;
+    student_edit_form.querySelector("input[name = 'id']").value = data.id;
+    student_edit_form.querySelector("input[name = 'photo']").value = data.photo;
+    student_edit_form.querySelector("img#prevPho").setAttribute("src", data.photo);
+
+}
+
+
+// student data update here now
+student_edit_form.onsubmit = (e) => {
+    // form realoed close here
+    e.preventDefault();
+
+    // form data here
+    const formData = new FormData(e.target);
+
+    // entries data here
+    const data = Object.fromEntries(formData.entries());
+
+     // get data form All students 
+     const oldData = getDataLS("students");
+
+    oldData[oldData.findIndex((item) => item.id === data.id)] = {
+        ...oldData[oldData.findIndex((item) => item.id === data.id)],
+        data,
+    };
+
+   
+
+    sendDataLS("students", oldData);
+
+
+    getStudentData();
+}
+
+
+
 
 
 // student form data 
