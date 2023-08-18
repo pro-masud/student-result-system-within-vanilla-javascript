@@ -3,48 +3,82 @@
 const studentDataForm = document.getElementById("student_create_form");
 const msg   = document.querySelector(".msg");
 const showStudent   = document.querySelector(".all-students-data");
+const showSingleView  = document.querySelector(".single-data");
 
 // get student data here
 
 const getStudentData = () => {
-    
     // get data to LS 
     const students = getDataLS("students");
 
     let content = "";
-
-    students.map((student,index) => {
-        content += `
-        <tr>
-            <td>${index + 1}</td>
-            <td><img src="${student.photo}" alt=""></td>
-            <td>${student.name}</td>
-            <td>${student.roll}</td>
-            <td>${student.reg}</td>
-            <td>${timeAgo(student.time)}</td>
-            <td><button class="btn btn-success">Add Result</button></td>
-            <td>
-                <button class="btn btn-info"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn btn-primary"><i class="fa-solid fa-edit"></i></button>
-                <button class="btn btn-danger" onclick="deleleStudent('${student.roll}')"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        </tr>
+    if(students.length > 0){
+        students.map((student,index) => {
+            content += `
+            <tr>
+                <td>${index + 1}</td>
+                <td><img src="${student.photo}" alt=""></td>
+                <td>${student.name}</td>
+                <td>${student.roll}</td>
+                <td>${student.reg}</td>
+                <td>${timeAgo(student.time)}</td>
+                <td><button class="btn btn-success">Add Result</button></td>
+                <td>
+                    <button data-bs-toggle="modal" data-bs-target="#show_single_student_modal" class="btn btn-info" onclick="singleView('${student.roll}')" ><i class="fa-solid fa-eye"></i></button>
+                    <button class="btn btn-primary"><i class="fa-solid fa-edit"></i></button>
+                    <button class="btn btn-danger" onclick="deleleStudent('${student.roll}')"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+            `;
+        });
+    }else{
+        content = `
+            <tr>
+                <td colspan="8" class="text-center text-danger">No Data Fount Here !!!</td>
+            </tr>
+        
         `;
-    });
-
+    }
     showStudent.innerHTML = content;
 }
 getStudentData();
+
+const singleView = (roll) => {
+
+    // get all student to database 
+    const allStudents = getDataLS("students");
+
+    const single = allStudents.find((student)  => student.roll == roll);
+
+    showSingleView.innerHTML = `
+        <div class="student-img">
+            <img style="width: 100px; height: 100px; border-radius: 50%;" src="${single.photo}" alt="">
+        </div>
+        <div class="student-info">
+            <h2>${single.name}</h2>
+            <div class="result d-flex justify-content-center gap-5 mt-3">
+                <p><strong>Roll:</strong> ${single.roll}</p>
+                <p><strong>Reg:</strong>${single.reg}</p>
+            </div>
+        </div>
+    `;
+}
 
 
 // Delele data form LS this Function
 
 const deleleStudent = (roll) => {
-    const oldData = getDataLS("students");
 
-    const updateData = oldData.filter((data) => data.roll !== roll);
+    const conform = confirm("Your Data Is Delete Now");
 
-    sendDataLS("students", updateData);
+    if(conform){
+        const oldData = getDataLS("students");
+        const updateData = oldData.filter((data) => data.roll !== roll);
+        sendDataLS("students", updateData);
+    }else{
+        alert("Your Data Safe Now");
+    }
+
     getStudentData();
 }
 
