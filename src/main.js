@@ -2,6 +2,7 @@
 
 const studentDataForm = document.getElementById("student_create_form");
 const msg   = document.querySelector(".msg");
+const msgEdit   = document.querySelector(".msg-edit");
 const showStudent   = document.querySelector(".all-students-data");
 const showSingleView  = document.querySelector(".single-data");
 const student_edit_form  = document.getElementById("student_edit_form");
@@ -95,6 +96,8 @@ const editeData = (id) => {
     // get all data for LS
     const oldData = getDataLS("students");
 
+
+
     const data = oldData.find((data) => data.id === id);
 
     student_edit_form.querySelector("input[name = 'name']").value = data.name;
@@ -120,6 +123,22 @@ student_edit_form.onsubmit = (e) => {
 
      // get data form All students 
      const oldData = getDataLS("students");
+
+
+      // check roll to database is allready value here
+    if(oldData.some((item) => item.roll === data.roll) == true){
+        msgEdit.innerHTML = createAlert("Roll Already Exists !!!");
+        return;
+    }
+
+
+    // check reg to database is allready value here
+    if(oldData.some((item) => item.reg === data.reg) == true){
+        msgEdit.innerHTML = createAlert("Registation Already Exists !!!");
+        return;
+    }
+
+
 
     oldData[oldData.findIndex((item) => item.id === data.id)] = {
         ...oldData[oldData.findIndex((item) => item.id === data.id)],
