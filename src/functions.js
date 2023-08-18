@@ -23,3 +23,12 @@ const createAlert = (msg, type = "danger") => {
       <button class="btn-close" data-bs-dismiss="alert"></button>
     </p>`;
 };
+
+/**
+ * isNumber function create only return a number here
+ * */
+
+const inNumber = (number) => {
+  const patten = /^[0-9]{6,10}$/;
+  return patten.test(number);
+}
