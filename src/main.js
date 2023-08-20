@@ -6,6 +6,7 @@ const msgEdit   = document.querySelector(".msg-edit");
 const showStudent   = document.querySelector(".all-students-data");
 const showSingleView  = document.querySelector(".single-data");
 const student_edit_form  = document.getElementById("student_edit_form");
+const student_result_form  = document.getElementById("student_result_form");
 
 // get student data here
 
@@ -24,7 +25,7 @@ const getStudentData = () => {
                 <td>${student.roll}</td>
                 <td>${student.reg}</td>
                 <td>${timeAgo(student.time)}</td>
-                <td><button class="btn btn-success">Add Result</button></td>
+                <td>${student.result === null ? '<button data-bs-toggle="modal" data-bs-target="#student_result_modal" class="btn btn-success" onclick="addResult(\''+ student.id +'\')">Add Result</button>' : '<button  class="btn btn-warning" >View Result</button>' }</td>
                 <td>
                     <button data-bs-toggle="modal" data-bs-target="#show_single_student_modal" class="btn btn-info" onclick="singleView('${student.roll}')" ><i class="fa-solid fa-eye"></i></button>
                     <button data-bs-toggle="modal" data-bs-target="#edit_student_modal" onclick="editeData('${student.id}')" class="btn btn-primary"><i class="fa-solid fa-edit"></i></button>
@@ -46,6 +47,37 @@ const getStudentData = () => {
 getStudentData();
 
 
+
+// addRestuld function student here now
+
+const addResult = (id) => {
+    student_result_form.querySelector("input[name='id']").value = id;
+}
+
+
+// student result get data to form 
+
+student_result_form.onsubmit = (e) => {
+     // form realoed close here
+     e.preventDefault();
+
+     const formData = new FormData(e.target);
+
+     const data = Object.fromEntries(formData.entries());
+
+      const oldData = getDataLS("students");
+
+      oldData[oldData.findIndex((item) => item.id === data.id)] = {
+        ...oldData[oldData.findIndex((item) => item.id === data.id)],
+        result: data,
+      }
+
+      sendDataLS("students", oldData);
+
+      getStudentData();
+
+    e.target.reset();
+}
 
 
 
@@ -79,8 +111,6 @@ const deleleStudent = (roll) => {
 
 
     const oldData = getDataLS("students");
-
-    confirm("Your Data Delete Now");
     const updateData = oldData.filter((data) => data.roll !== roll);
     sendDataLS("students", updateData);
         
@@ -142,7 +172,7 @@ student_edit_form.onsubmit = (e) => {
 
     oldData[oldData.findIndex((item) => item.id === data.id)] = {
         ...oldData[oldData.findIndex((item) => item.id === data.id)],
-        data,
+        ...data,
     };
 
    
@@ -176,7 +206,6 @@ studentDataForm.onsubmit = (e) => {
         msg.innerHTML = createAlert("Invalid Registation Number!!!");
     }else{
 
-
         // old student date here now
         const oldStudentData = getDataLS("students");
         
@@ -186,19 +215,18 @@ studentDataForm.onsubmit = (e) => {
             return;
         }
 
-
          // check reg to database is allready value here
         if(oldStudentData.some((item) => item.reg === data.reg) == true){
             msg.innerHTML = createAlert("Registation Already Exists !!!");
             return;
         }
 
-
         oldStudentData.push({
             ...data,
             result: null,
             time: Date.now(),
             id: getRandomUniqueID(26),
+            result: null,
         });
 
         // set data for LS
